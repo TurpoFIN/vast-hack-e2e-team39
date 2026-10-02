@@ -2,46 +2,43 @@
 
 Minimal **Team 39** workshop transfer of `/workspace/vast-hack` — **no `.env` secrets**.
 
-Tarball size: **~362 KB** (`vast-hack-e2e.tgz`).
+Local tarball on the build box: `/workspace/vast-hack-e2e.tgz` (**362 KB**).
 
-## Artifacts
+## What is already public on this repo
 
-| File | Purpose |
-|------|---------|
-| `vast-hack-e2e.tgz.b64.part00` … `part02` | Base64 of the e2e tarball (split for upload) |
-| [`concat_parts.sh`](./concat_parts.sh) | Concat parts → decode → `vast-hack-e2e.tgz` |
-| [`vast-wire-smoke.py`](./vast-wire-smoke.py) | S3 put/get smoke for `team-39-vss-db` (reads `/config` env) |
-| [`decode_tarball.sh`](./decode_tarball.sh) | Decode a single `.b64` if you already concatenated |
+| File | URL |
+|------|-----|
+| S3 smoke (paste-friendly) | https://raw.githubusercontent.com/TurpoFIN/vast-hack-e2e-team39/main/vast-wire-smoke.py |
+| Repo home | https://github.com/TurpoFIN/vast-hack-e2e-team39 |
 
-**Raw smoke (paste fallback):**  
-https://raw.githubusercontent.com/TurpoFIN/vast-hack-e2e-team39/main/vast-wire-smoke.py
+Anonymous file hosts were not used (blocked). The binary tarball stays on the box; VM cannot reach a box http.server.
 
-## On the workshop VM (browser download)
+## Transfer plan (VM)
 
-1. Open https://github.com/TurpoFIN/vast-hack-e2e-team39 in the VM browser.
-2. Download `vast-hack-e2e.tgz.b64.part00`, `part01`, `part02`, and `concat_parts.sh` (or clone the repo).
-3. Rebuild and extract:
-
+### A — Preferred: browser download of smoke + code-server upload of tarball
+1. On the VM browser open the smoke raw URL above → Save As `vast-wire-smoke.py`.
+2. Via code-server file upload on the VM, upload `/workspace/vast-hack-e2e.tgz`.
+3. On the VM:
 ```bash
-bash concat_parts.sh
-tar -xzf vast-hack-e2e.tgz
-cd vast-hack
-```
-
-4. **Do not** copy box `.env`. Source workshop config, then smoke:
-
-```bash
+tar -xzf vast-hack-e2e.tgz && cd vast-hack
 set -a && source /config/team-39.config && set +a
-python3 vast-wire-smoke.py   # or curl the raw URL above into a file
+python3 ../vast-wire-smoke.py
 ```
 
-## Fallbacks
+### B — Fallback: paste / curl smoke only
+```bash
+curl -fsSL -o vast-wire-smoke.py \
+  https://raw.githubusercontent.com/TurpoFIN/vast-hack-e2e-team39/main/vast-wire-smoke.py
+set -a && source /config/team-39.config && set +a
+python3 vast-wire-smoke.py
+```
 
-- **Paste smoke only:** open the raw URL above, paste into the VM editor, run after sourcing `/config/team-39.config`.
-- **code-server upload:** upload `/workspace/vast-hack-e2e.tgz` from a machine that has it, or upload the three `.b64.part*` files + `concat_parts.sh`.
-- Box `python -m http.server` will **not** reach the VM (no route to the box).
+### C — code-server upload only
+Drag `vast-hack-e2e.tgz` into the VM workspace, then extract as in A.
 
-## Exclusions
+**Do not** copy box `.env`. Workshop `/config/team-39.config` supplies credentials.
+
+## Bundle exclusions
 
 `.env`, `.venv`, `models/`, raw videos, `__pycache__`, `.git`, large docs images, evidence clips/pdf.
 

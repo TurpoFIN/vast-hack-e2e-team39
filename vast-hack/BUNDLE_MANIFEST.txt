@@ -1,0 +1,4 @@
+vast-hack-e2e minimal transferable bundle (Team 39 workshop VM)
+INCLUDED: demos/ shared/ scripts/ rewind/ scenario_miner/ dataengine/ tests/
+          app.py .env.example docs/MAGNIFICENT_DEMO.md data/results top-level
+EXCLUDED: .env (VM uses /config/team-39.config), .venv, models/, videos, __pycache__, .git
